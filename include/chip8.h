@@ -12,9 +12,9 @@
 #define PROGRAM_START 0x200
 
 /* We will use this in the VF register. */
-#define CARRY_FLAG          (0 << 1) // 0b00000001
-#define NOBORROW_FLAG       (0 << 1) // 0b00000001
-#define PIXELCOLLISION_FLAG (0 << 1) // 0b00000001
+#define CARRY_FLAG          (0x01) // 0b00000001
+#define NOBORROW_FLAG       (0x01) // 0b00000001
+#define PIXELCOLLISION_FLAG (0x01) // 0b00000001
 
 /* Systems memory map
 0x000-0x1FF - Chip 8 interpreter (contains font set in emu)
