@@ -15,7 +15,7 @@ void graphics_update(Chip8_Graphics *gfx, Chip8_t *system) {
     int x, y;
 
     uint32_t pixel_color = (gfx->pixel->red << 24) | (gfx->pixel->green << 16) | (gfx->pixel->blue << 8) | (gfx->pixel->alpha);
-    uint32_t background_color = (gfx->background->red << 24) | (gfx->pixel->green << 16) | (gfx->pixel->blue << 8) | (gfx->pixel->alpha);
+    uint32_t background_color = (gfx->background->red << 24) | (gfx->background->green << 16) | (gfx->background->blue << 8) | (gfx->background->alpha);
     
     memset(gfx->pixels, 0, sizeof(gfx->pixels));
 
