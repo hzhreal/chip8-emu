@@ -14,7 +14,7 @@ int load_rom(Chip8_t *system, const char *path) {
 
     fseek(fp, 0, SEEK_END);
     len = ftell(fp);
-    if (len > sizeof(system->memory) - PROGRAM_START) {
+    if (len > sizeof(system->memory) - PROGRAM_START || len % sizeof(uint16_t) != 0) {
         fclose(fp);
         return -2;
     }
