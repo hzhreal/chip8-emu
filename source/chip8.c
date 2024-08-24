@@ -389,10 +389,6 @@ Set sound timer to value of register
 */
 static inline void set_sound_timer_to_reg(Chip8_t *system, uint8_t x) {
     system->sound_timer = system->V[x];
-    /* INSTANT BEEP */
-    if (system->sound_timer == 1) {
-        beep();
-    }
     return;
 }
 
