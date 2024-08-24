@@ -28,6 +28,12 @@ const uint8_t chip8_fontset[] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+static inline void beep(void) {
+    printf("\a");
+    fflush(stdout);
+    return;
+}
+
 /* 
 Fetch 16-bit opcode from memory 
     - The opcode consists of the high byte which is the program counter (pc) then the low byte which is program counter (pc) + 1
@@ -383,6 +389,10 @@ Set sound timer to value of register
 */
 static inline void set_sound_timer_to_reg(Chip8_t *system, uint8_t x) {
     system->sound_timer = system->V[x];
+    /* INSTANT BEEP */
+    if (system->sound_timer == 1) {
+        beep();
+    }
     return;
 }
 
@@ -468,7 +478,7 @@ void chip8_update_timers(Chip8_t *system) {
     }
     if (system->sound_timer > 0) {
         if (system->sound_timer == 1) {
-            printf("\a"); // BEEP
+            beep();
         }
         system->sound_timer--;
     }
