@@ -519,7 +519,7 @@ void chip8_emulatecycle(Chip8_t *system) {
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
                     system->EMU_flags.exit = 1;
-                    break;;
+                    break;
             }
             break;
         
@@ -608,7 +608,7 @@ void chip8_emulatecycle(Chip8_t *system) {
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
                     system->EMU_flags.exit = 1;
-                    break;;
+                    break;
             }
             break;
         

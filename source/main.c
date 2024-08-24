@@ -123,10 +123,10 @@ int main(int argc, char **argv) {
         /* Execute the amount of instructions per frame*/
         for (i = 0; i < ipf; i++) {
             chip8_emulatecycle(&sys);
+            #if defined(DEBUG)
             if (sys.EMU_flags.exit) {
                 break;
             }
-            #if defined(DEBUG)
             executed++;
             #endif
         }

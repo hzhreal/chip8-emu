@@ -38,6 +38,7 @@ If you want to compile in debugging mode, uncomment
 ```
 In the Makefile
 
+### Dependencies
 To build you will need to install:
 - [SDL2](https://github.com/libsdl-org/SDL)
 - [NeatLogger](https://github.com/hzhreal/NeatLogger)
