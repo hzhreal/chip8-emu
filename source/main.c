@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
     /* USER-CONFIGURATION */
     int scaling;
     int ips;
+    RGBA_t background, pixel;
     ConfigTable *table = config_parse_file(CONFIG_FILE_PATH);
 
     if (table) {
@@ -68,6 +69,34 @@ int main(int argc, char **argv) {
 
     /* INITIALIZE GRAPHICS */
     Chip8_Graphics gfx;
+    if (table) {
+        if (config_get_rgba(table, "background", "color", &background) != 0) {
+            background.red = 0;
+            background.green = 0;
+            background.blue = 0;
+            background.alpha = 255;
+        }
+        if (config_get_rgba(table, "pixel", "color", &pixel) != 0) {
+            pixel.red = 255;
+            pixel.green = 255;
+            pixel.blue = 255;
+            pixel.alpha = 255;
+        }
+    }
+    else {
+        background.red = 0;
+        background.green = 0;
+        background.blue = 0;
+        background.alpha = 255;
+
+        pixel.red = 255;
+        pixel.green = 255;
+        pixel.blue = 255;
+        pixel.alpha = 255;
+    }
+    gfx.background = &background;
+    gfx.pixel = &pixel;
+
     if (graphics_init(&gfx, scaling, argv[1]) < 0) {
         LOG_TO_STREAM(stderr, LOG_LEVEL_CRITICAL, LOG_FLAGS, "FAILED TO INITIALIZE GRAPHICS: %s", SDL_GetError());
         graphics_cleanup(&gfx);
@@ -134,7 +163,7 @@ int main(int argc, char **argv) {
         }
 
         #if defined(DEBUG)
-        if (executed >= 10000)
+        if (executed >= 100)
             break;
         #endif
     }

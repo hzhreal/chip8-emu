@@ -3,6 +3,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <config.h>
+
 #include "chip8.h"
 
 #define CLOCK_FREQUENCY 60
@@ -20,6 +22,8 @@ typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Texture *texture;
+    RGBA_t *background;
+    RGBA_t *pixel;
     uint32_t pixels[DISPLAY_WIDTH * DISPLAY_HEIGHT];
 } Chip8_Graphics;
 

@@ -13,13 +13,19 @@ void graphics_delay(uint32_t ms) {
 
 void graphics_update(Chip8_Graphics *gfx, Chip8_t *system) {
     int x, y;
+
+    uint32_t pixel_color = (gfx->pixel->red << 24) | (gfx->pixel->green << 16) | (gfx->pixel->blue << 8) | (gfx->pixel->alpha);
+    uint32_t background_color = (gfx->background->red << 24) | (gfx->pixel->green << 16) | (gfx->pixel->blue << 8) | (gfx->pixel->alpha);
     
     memset(gfx->pixels, 0, sizeof(gfx->pixels));
 
     for (x = 0; x < DISPLAY_WIDTH; x++) {
         for (y = 0; y < DISPLAY_HEIGHT; y++) {
             if (system->gfx[x + (y * DISPLAY_WIDTH)]) {
-                gfx->pixels[x + (y * DISPLAY_WIDTH)] = UINT32_MAX; // white
+                gfx->pixels[x + (y * DISPLAY_WIDTH)] = pixel_color;
+            }
+            else {
+                gfx->pixels[x + (y * DISPLAY_WIDTH)] = background_color;
             }
         }
     }
