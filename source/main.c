@@ -2,6 +2,25 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 
+#if defined(DEBUG)
+#include <stdbool.h>
+#include <inttypes.h>
+#include <limits.h>
+#include <errno.h>
+
+static int str_to_u16(const char *s, uint16_t *i) {
+    long l;
+    char *end = NULL;
+    errno = 0;
+    l = strtol(s, &end, 16);
+    if (errno != 0 || l > UINT16_MAX || l < 0 || *end != '\0') {
+        return -1;
+    }
+    *i = (uint16_t)l;
+    return 0;
+}
+#endif
+
 #include <config.h>
 #include <log.h>
 
@@ -111,7 +130,9 @@ int main(int argc, char **argv) {
     int ipf = ips / CLOCK_FREQUENCY;
 
     #if defined(DEBUG)
-    int executed = 0;
+    bool run = false;
+    uint16_t executed = 0;
+    uint16_t exec_max = 0;
     #endif
 
     /* EMU LOOP*/
@@ -120,14 +141,103 @@ int main(int argc, char **argv) {
 
         await_keypress(&event, &sys);
 
+        #if defined(DEBUG)
+        char line[0x100] = {0};
+        char arg;
+        char *delim;
+        if (!run) {
+            for (;;) {
+                printf("> ");
+                if (fgets(line, sizeof(line), stdin)) {
+                    arg = line[0];
+                    switch (arg) {
+                        case 's':
+                            break;
+                        case 'b':
+                            sys.pc -= sizeof(uint16_t);
+                            break;
+                        case 'd':
+                            chip8_print(&sys);
+                            break;
+                        case 'g':
+                            delim = strtok(line + 1, " \n");
+                            if (delim) {
+                                if (str_to_u16(delim, &sys.pc) != 0) {
+                                    printf("Failed to parse.\n");
+                                }
+                            }
+                            else {
+                                printf("g <0x0>\n");
+                            }
+                            break;
+                        case 'm':
+                            uint16_t p = 0;
+                            delim = strtok(line + 1, " \n");
+                            if (delim) {
+                                if (str_to_u16(delim, &p) == 0) {
+                                    printf("%" PRIX8 "\n", sys.memory[p]);
+                                }
+                                else {
+                                    printf("Failed to parse.\n");
+                                }
+                            }
+                            else {
+                                printf("m <0x0>\n");
+                            }
+                            break;
+                        case 'r':
+                            delim = strtok(line + 1, " \n");
+                            if (delim) {
+                                if (str_to_u16(delim, &exec_max) == 0) {
+                                    if (exec_max > 0) {
+                                        run = true;
+                                    }
+                                    else {
+                                        printf("Number of instructions to execute is not set.\n");
+                                    }
+                                }
+                                else {
+                                    printf("Failed to parse\n");
+                                }
+                            }
+                            else {
+                                printf("r <0x0>\n");
+                            }
+                            break;
+                        case 'q':
+                            sys.EMU_flags.exit = 1;
+                            run = true;
+                            break;
+                        case 'h':
+                            printf("'s'       - Step Forward\n");
+                            printf("'b'       - Step Back\n");
+                            printf("'d'       - Dump registers, stack, and opcode\n");
+                            printf("'g <0x0>' - Go to location\n");
+                            printf("'m <0x0>' - Print value at memory location\n");
+                            printf("'r <0x0>' - Run amount of instructions\n");
+                            printf("'q'       - Quit\n");
+                            printf("'h'       - Show all commands\n");
+                            break;
+                        default:
+                            printf("Unknown command.\n");
+                            break;
+                    }
+                }
+                if (arg == 's' || arg == 'b' || arg == 'q' || arg == 'g' || arg == 'r') {
+                    break;
+                }
+            }
+        }
+        #endif
+
         /* Execute the amount of instructions per frame*/
         for (i = 0; i < ipf; i++) {
             chip8_emulatecycle(&sys);
             #if defined(DEBUG)
-            if (sys.EMU_flags.exit) {
+            executed++;
+            if (executed >= exec_max) {
                 break;
             }
-            executed++;
             #endif
         }
 
@@ -153,7 +263,6 @@ int main(int argc, char **argv) {
             printf("Restarted\n");
         }
 
-
         /* Maintain within the clock period */
         end = SDL_GetPerformanceCounter();
         elapsed_time = ((end - start) * 1000) / freq;
@@ -163,8 +272,10 @@ int main(int argc, char **argv) {
         }
 
         #if defined(DEBUG)
-        if (executed >= 100)
-            break;
+        if (executed >= exec_max) {
+            run = false;
+            executed = 0;
+        }
         #endif
     }
 

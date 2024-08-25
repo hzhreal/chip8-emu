@@ -59,6 +59,12 @@ Return from a function:
 */
 static inline void return_from_subroutine(Chip8_t *system) {
     system->sp--;
+    #if defined(DEBUG)
+    if (system->sp >= STACK_SIZE) {
+        printf("PREVENTED STACK OVERFLOW! SP: %" PRIX16 "\nPROGRAM SHOULD HAVE RETURNED FROM SUBROUTINE, SO UNEXPECTED BEHAVIOR MIGHT OCCUR!\n", system->sp);
+        return;
+    }
+    #endif
     system->pc = system->stack[system->sp];
     return;
 }
@@ -78,6 +84,12 @@ Invoke function
     - Set the program counter (pc) to the subroutine address
 */
 static inline void call_subroutine(Chip8_t *system, uint16_t addr) {
+    #if defined(DEBUG)
+    if (system->sp >= STACK_SIZE) {
+        printf("PREVENTED STACK OVERFLOW! SP: %" PRIX16 "\nPROGRAM SHOULD HAVE CALLED A SUBROUTINE, SO UNEXPECTED BEHAVIOR MIGHT OCCUR!\n", system->sp);
+        return;
+    }
+    #endif
     system->stack[system->sp] = system->pc;
     system->sp++;
     system->pc = addr;
@@ -496,17 +508,6 @@ void chip8_emulatecycle(Chip8_t *system) {
     /* Store next instruction */
     system->pc += sizeof(uint16_t);
 
-    #if defined(DEBUG)
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "\nI: %" PRIX16, system->I);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "PC: %" PRIX16, system->pc);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "OPCODE: %" PRIX16, system->opcode);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "N: %" PRIX8, n);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "NN: %" PRIX8, nn);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "NNN: %" PRIX16, nnn);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "X: %" PRIX8, x);
-    LOG_TO_STREAM(stdout, LOG_LEVEL_DEBUG, LOG_FLAGS, "Y: %" PRIX8 "\n", y);
-    #endif
-
     /* Decode and execode opcode */
     switch (system->opcode & 0xF000) {
         case 0x0000:
@@ -524,7 +525,10 @@ void chip8_emulatecycle(Chip8_t *system) {
                 
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
+                    #if defined(DEBUG)
+                    #else
                     system->EMU_flags.exit = 1;
+                    #endif
                     break;
             }
             break;
@@ -613,7 +617,10 @@ void chip8_emulatecycle(Chip8_t *system) {
 
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
+                    #if defined(DEBUG)
+                    #else
                     system->EMU_flags.exit = 1;
+                    #endif
                     break;
             }
             break;
@@ -658,7 +665,10 @@ void chip8_emulatecycle(Chip8_t *system) {
 
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
+                    #if defined(DEBUG)
+                    #else
                     system->EMU_flags.exit = 1;
+                    #endif
                     break;
             }
             break;
@@ -712,16 +722,47 @@ void chip8_emulatecycle(Chip8_t *system) {
                 
                 default:
                     LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
+                    #if defined(DEBUG)
+                    #else
                     system->EMU_flags.exit = 1;
+                    #endif
                     break;
             }
             break;
 
         default:
             LOG_TO_STREAM(stderr, LOG_LEVEL_WARNING, LOG_FLAGS, "INVALID OPCODE: %" PRIX16, system->opcode);
+            #if defined(DEBUG)
+            #else
             system->EMU_flags.exit = 1;
+            #endif
             break;
     }
 
     return;
 }
+
+#if defined(DEBUG)
+void chip8_print(Chip8_t *system) {
+    int i;
+
+    printf("EXECUTED OPCODE: %" PRIX16 "\n", system->opcode);
+    printf("NEXT OPCODE %" PRIX16 "\n", fetch_opcode(system));
+    printf("PC: %" PRIX16 "\n", system->pc);
+    printf("I: %" PRIX16 "\n", system->I);
+    printf("DELAY TIMER %" PRIX8 "\n", system->delay_timer);
+    printf("SOUND TIMER: %" PRIX8 "\n\n", system->sound_timer);
+
+    for (i = 0; i < REGISTER_COUNT; i++) {
+        printf("V%" PRIX8 ":%" PRIX8 "\n", i, system->V[i]);
+    }
+    printf("\n");
+
+    printf("STACK:\n");
+    for (i = 0; i < STACK_SIZE; i++) {
+        printf("0x%" PRIX8 ": %" PRIX16 "\n", i, system->stack[i]);
+    }
+    printf("SP: %" PRIX16 "\n", system->sp);
+    return;
+}
+#endif

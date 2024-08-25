@@ -65,4 +65,8 @@ void chip8_initialize(Chip8_t *system);
 void chip8_update_timers(Chip8_t *system);
 void chip8_emulatecycle(Chip8_t *system);
 
+#if defined(DEBUG)
+void chip8_print(Chip8_t *system);
+#endif
+
 #endif // CHIP8_H

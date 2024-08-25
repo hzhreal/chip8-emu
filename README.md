@@ -38,6 +38,18 @@ If you want to compile in debugging mode, uncomment
 ```
 In the Makefile
 
+### Debugging mode
+```
+'s'       - Step Forward
+'b'       - Step Back
+'d'       - Dump registers, stack, and opcode
+'g <0x0>' - Go to location
+'m <0x0>' - Print value at memory location
+'r <0x0>' - Run amount of instructions
+'q'       - Quit
+'h'       - Show all commands
+``
+
 ### Dependencies
 To build you will need to install:
 - [SDL2](https://github.com/libsdl-org/SDL)
