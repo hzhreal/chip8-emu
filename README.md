@@ -1,5 +1,5 @@
 ## chip8-emu
-A Chip8 emulator written in C with an interpreter approach.
+A Chip8 emulator written in C with an interpreter approach, with a compact and minimal debugger built in.
 
 ### Key features
 The emulator will allow you to run ROMs designed for the Chip8 virtual machine
