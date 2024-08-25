@@ -52,7 +52,7 @@ In the Makefile
 'P'              - Pop a value off the stack
 'r <V0x0> <0x0>' - Set register to a value
 'h'              - Show all commands
-``
+```
 
 ### Dependencies
 To build you will need to install:
