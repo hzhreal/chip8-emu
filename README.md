@@ -40,14 +40,18 @@ In the Makefile
 
 ### Debugging mode
 ```
-'s'       - Step Forward
-'b'       - Step Back
-'d'       - Dump registers, stack, and opcode
-'g <0x0>' - Go to location
-'m <0x0>' - Print value at memory location
-'r <0x0>' - Run amount of instructions
-'q'       - Quit
-'h'       - Show all commands
+'s'              - Step Forward
+'b'              - Step Back
+'d'              - Dump registers, stack, and opcode
+'g <0x0>'        - Go to location
+'m <0x0>'        - Print value at memory location
+'e <0x0>'        - Run amount of instructions
+'q'              - Quit
+'c'              - Clear the display
+'p <0x0>'        - Push a value onto the stack
+'P'              - Pop a value off the stack
+'r <V0x0> <0x0>' - Set register to a value
+'h'              - Show all commands
 ``
 
 ### Dependencies

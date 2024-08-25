@@ -738,11 +738,9 @@ void chip8_emulatecycle(Chip8_t *system) {
             #endif
             break;
     }
-
     return;
 }
 
-#if defined(DEBUG)
 void chip8_print(Chip8_t *system) {
     int i;
 
@@ -765,4 +763,3 @@ void chip8_print(Chip8_t *system) {
     printf("SP: %" PRIX16 "\n", system->sp);
     return;
 }
-#endif
